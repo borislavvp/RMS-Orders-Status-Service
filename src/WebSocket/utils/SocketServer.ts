@@ -1,6 +1,5 @@
 import ws from 'ws';
 import jwt from 'jsonwebtoken';
-import { Message } from '../messages/Message';
 import Messager from './Messager';
 import OrderAvailableMessage from '../messages/server/OrderAvailableMessage';
 import { ServerMessage } from '../messages/server/ServerMessage';

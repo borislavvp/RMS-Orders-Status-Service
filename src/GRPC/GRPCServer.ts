@@ -1,7 +1,7 @@
-import grpc from '@grpc/grpc-js';
+import grpc, { sendUnaryData } from '@grpc/grpc-js';
 
-import * as services from './generated/messages_grpc_pb';
-import * as messages from './generated/messages_pb';
+import services from './generated/messages_grpc_pb';
+import messages from './generated/messages_pb';
 
 import { SocketServer } from '../WebSocket/utils/SocketServer';
 
@@ -15,10 +15,10 @@ export class GRPCServer {
   /**
    * Implements the SayHello RPC method.
    */
-  public sayHello(call:any, callback:any) {
-    var reply = new messages.HelloReq();
-    reply.setName('Hello ' + call.request.getName());
-    callback(null, reply);
+  public sayHello(call: grpc.ServerUnaryCall<messages.HelloReq, messages.HelloResponse>, callback: sendUnaryData<messages.HelloResponse>) {
+    var reply = new messages.HelloResponse();
+    reply.setMessage('Hello ' + call.request.getName());
+    callback(null,reply);
   }
   
   /**
