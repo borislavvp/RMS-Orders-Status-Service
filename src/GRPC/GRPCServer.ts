@@ -1,9 +1,17 @@
+import grpc from '@grpc/grpc-js';
+
 import * as services from './generated/messages_grpc_pb';
 import * as messages from './generated/messages_pb';
 
-import grpc from '@grpc/grpc-js';
+import { SocketServer } from '../WebSocket/utils/SocketServer';
 
 export class GRPCServer {
+  private _socketServer: SocketServer;
+
+  constructor(socketServer: SocketServer) {
+    this._socketServer = socketServer;
+  }
+
   /**
    * Implements the SayHello RPC method.
    */

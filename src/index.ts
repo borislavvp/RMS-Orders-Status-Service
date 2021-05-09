@@ -8,5 +8,5 @@ if (process.env.NODE_ENV !== 'production') {
 }
 const socket = new SocketServer();
 socket.start();
-const grpc = new GRPCServer();
+const grpc = new GRPCServer(socket);
 grpc.start();
