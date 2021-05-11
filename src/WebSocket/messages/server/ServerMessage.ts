@@ -1,3 +1,4 @@
-import OrderAvailableMessage from "./OrderAvailableMessage";
+import {OrderStatusChangeMessage} from "./OrderStatusChangeMessage";
+import {OrderAvailableMessage} from "./OrderAvailableMessage";
 
-export type ServerMessage = OrderAvailableMessage
+export type ServerMessage = OrderAvailableMessage | OrderStatusChangeMessage
