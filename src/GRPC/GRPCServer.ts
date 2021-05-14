@@ -3,7 +3,7 @@ import grpc, { sendUnaryData } from '@grpc/grpc-js';
 import services from './generated/messages_grpc_pb';
 import messages from './generated/messages_pb';
 
-import { SocketServer } from '../WebSocket/utils/SocketServer';
+import { SocketServer } from '../WebSocket/SocketServer';
 
 export class GRPCServer {
   private _socketServer: SocketServer;
