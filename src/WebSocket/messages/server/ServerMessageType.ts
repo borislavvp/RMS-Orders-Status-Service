@@ -1,0 +1,4 @@
+export enum ServerMessageType {
+  ORDER_AVAILABLE = "ORDER_AVAILABLE",
+  ORDER_STATUS_CHANGE = "ORDER_STATUS_CHANGE",
+}
