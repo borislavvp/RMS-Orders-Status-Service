@@ -1,11 +1,9 @@
 import ws from 'ws';
 import jwt from 'jsonwebtoken';
-import { OrderStatus,OrderStatusChangeMessage} from './messages/server/OrderStatusChangeMessage';
 import { ServerMessage } from './messages/server/ServerMessage';
 import debounce from './utils/debounce';
 import { ServerState } from './types/ServerState';
 import { ServerMessageType } from './messages/server/ServerMessageType';
-import { OrderAvailableMessage } from './messages/server/OrderAvailableMessage';
 interface Client{
     [key:string]:ws
 }
@@ -37,15 +35,6 @@ export class SocketServer {
 
         console.log(`App socket open at port ${JSON.stringify(this.server.options.port)}`);
 
-        this.serverMessagessBuffer.push(new OrderAvailableMessage(
-            {
-                orderNumber: 123123,
-                amount: 11,
-                customerName: "Bobi",
-                location: "Bomanshof 131",
-                orderDate: "Tue May 11 2021"
-            }))
-        
         this.server.on("connection", (client, req) => {
             console.log(`Client - ${req.headers.origin} connected!`);
             this.clients.byOrigin = {
@@ -104,7 +93,7 @@ export class SocketServer {
 
     private verifyClientToken(token: string | null) {
         if (token) {
-            const decoded = jwt.decode(token) as {[key:string]:any} ;
+            const decoded = jwt.decode(token) as {[key:string]:any};
             return decoded["iss"] === process.env.TOKEN_ISSUER;
         }
         return false;
