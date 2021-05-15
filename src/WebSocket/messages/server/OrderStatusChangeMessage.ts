@@ -1,11 +1,11 @@
 import { Message } from "../Message";
 import { ServerMessageType } from "./ServerMessageType";
 
-export enum OrderStatus {
-    NEW,
-    PREPARED,
-    PICKED,
-    DELIVERED
+export enum OrderStatus{
+    New = "New",
+    Preparing = "Preparing",
+    Delivering = "Delivering",
+    Delivered = "Delivered"
 }
 
 interface OrderStatusChangePayload {
