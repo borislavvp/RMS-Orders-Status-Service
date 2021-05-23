@@ -1,13 +1,13 @@
 import { Message } from "../Message";
 import { ServerMessageType } from "./ServerMessageType";
 
-interface OrderProduct {
-  id: number, 
-  img: string, 
+export interface OrderProduct{
+  productId: number, 
   name: string, 
-  description: string,
-  products: string,
-  price:number
+  ingredients: string,
+  price:number,
+  quantity:number
+  imgUrl: string, 
 }
 
 interface OrderAvailablePayload {

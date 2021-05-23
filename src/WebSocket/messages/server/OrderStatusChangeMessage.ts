@@ -4,6 +4,7 @@ import { ServerMessageType } from "./ServerMessageType";
 export enum OrderStatus{
     New = "New",
     Preparing = "Preparing",
+    Prepared = "Prepared",
     Delivering = "Delivering",
     Delivered = "Delivered"
 }
