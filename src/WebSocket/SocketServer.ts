@@ -72,7 +72,7 @@ export class SocketServer {
         });
         this.server.on("error", (e: any) => {
             console.error("Socket encountered error: Closing socket",
-                e.reason);
+                e);
             this.server.close();
         });
     }
