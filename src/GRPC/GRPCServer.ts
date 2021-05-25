@@ -103,7 +103,7 @@ export class GRPCServer {
         orderStatusChanged: this.orderStatusChanged,
       }
     );
-    server.bindAsync('0.0.0.0:50051', grpc.ServerCredentials.createInsecure(), () => {
+    server.bindAsync('[::]:50051', grpc.ServerCredentials.createInsecure(), () => {
       server.start();
     });
     console.log("GRPC Started!")

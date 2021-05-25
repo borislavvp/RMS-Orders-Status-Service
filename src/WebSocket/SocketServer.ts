@@ -4,9 +4,8 @@ import { ServerMessage } from './messages/server/ServerMessage';
 import debounce from './utils/debounce';
 import { ServerState } from './types/ServerState';
 import { ServerMessageType } from './messages/server/ServerMessageType';
-interface Client{
-    [key:string]:ws
-}
+import { OrderAvailableMessage } from './messages/server/OrderAvailableMessage';
+import { OrderStatus, OrderStatusChangeMessage } from './messages/server/OrderStatusChangeMessage';
 export class SocketServer {
     private server!: ws.Server;
     private serverMessagessBuffer: ServerMessage[];
@@ -34,6 +33,21 @@ export class SocketServer {
         this.serverState = ServerState.OPEN;
 
         console.log(`App socket open at port ${JSON.stringify(this.server.options.port)}`);
+        
+        this.serverMessagessBuffer.push(new OrderAvailableMessage({
+            amount: 11,
+            customerName: "bobi",
+            customerPhone: "0888218218",
+            location: "Bomanshof 1312",
+            orderDate: "Sat May 15 2021",
+            orderNumber: 11111,
+            products:[]
+        }))
+        
+        this.serverMessagessBuffer.push(new OrderStatusChangeMessage({
+            orderStatus:OrderStatus.Preparing,
+            orderNumber:11111
+        }))
 
         this.server.on("connection", (client, req) => {
             console.log(`Client - ${req.headers.origin} connected!`);
@@ -50,13 +64,15 @@ export class SocketServer {
         this.server.on("close", (e: any) => {
             this.serverState = ServerState.CLOSED;
             console.log(
-                "Socket is closed. Reconnect will be attempted in 2 seconds.",
-                e.reason
+                "Socket is closed. Reconnect will be attempted in 2 seconds."
             );
-            this.start();
+            setTimeout(() => {
+                this.start();
+            },3000)
         });
         this.server.on("error", (e: any) => {
-            console.error("Socket encountered error: Closing socket");
+            console.error("Socket encountered error: Closing socket",
+                e.reason);
             this.server.close();
         });
     }
@@ -88,7 +104,7 @@ export class SocketServer {
     }
     private flushServerMessages = debounce(() => {
                 this.serverMessagessBuffer.forEach(m => this.send(m));
-                this.serverMessagessBuffer = [];
+                // this.serverMessagessBuffer = [];
             },1000);
 
     private verifyClientToken(token: string | null) {
