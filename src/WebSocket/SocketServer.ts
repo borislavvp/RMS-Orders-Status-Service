@@ -1,11 +1,9 @@
 import ws from 'ws';
-import jwt from 'jsonwebtoken';
 import { ServerMessage } from './messages/server/ServerMessage';
 import debounce from './utils/debounce';
 import { ServerState } from './types/ServerState';
 import { ServerMessageType } from './messages/server/ServerMessageType';
-import { OrderAvailableMessage } from './messages/server/OrderAvailableMessage';
-import { OrderStatus, OrderStatusChangeMessage } from './messages/server/OrderStatusChangeMessage';
+import { validateClientToken } from '@/shared/utils/validateClientToken';
 export class SocketServer {
     private server!: ws.Server;
     private serverMessagessBuffer: ServerMessage[];
@@ -33,22 +31,7 @@ export class SocketServer {
         this.serverState = ServerState.OPEN;
 
         console.log(`App socket open at port ${JSON.stringify(this.server.options.port)}`);
-        
-        this.serverMessagessBuffer.push(new OrderAvailableMessage({
-            amount: 11,
-            customerName: "bobi",
-            customerPhone: "0888218218",
-            location: "Bomanshof 1312",
-            orderDate: "Sat May 15 2021",
-            orderNumber: 11111,
-            products:[]
-        }))
-        
-        this.serverMessagessBuffer.push(new OrderStatusChangeMessage({
-            orderStatus:OrderStatus.Preparing,
-            orderNumber:11111
-        }))
-
+  
         this.server.on("connection", (client, req) => {
             console.log(`Client - ${req.headers.origin} connected!`);
             this.clients.byOrigin = {
@@ -104,14 +87,10 @@ export class SocketServer {
     }
     private flushServerMessages = debounce(() => {
                 this.serverMessagessBuffer.forEach(m => this.send(m));
-                // this.serverMessagessBuffer = [];
+                this.serverMessagessBuffer = [];
             },1000);
 
     private verifyClientToken(token: string | null) {
-        if (token) {
-            const decoded = jwt.decode(token) as {[key:string]:any};
-            return decoded["iss"] === process.env.TOKEN_ISSUER;
-        }
-        return false;
+        return validateClientToken(token);
     }
 }
