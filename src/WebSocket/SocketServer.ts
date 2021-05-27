@@ -1,12 +1,9 @@
 import ws from 'ws';
-import jwt from 'jsonwebtoken';
 import { ServerMessage } from './messages/server/ServerMessage';
 import debounce from './utils/debounce';
 import { ServerState } from './types/ServerState';
 import { ServerMessageType } from './messages/server/ServerMessageType';
-interface Client{
-    [key:string]:ws
-}
+import { validateClientToken } from '@/shared/utils/validateClientToken';
 export class SocketServer {
     private server!: ws.Server;
     private serverMessagessBuffer: ServerMessage[];
@@ -34,7 +31,7 @@ export class SocketServer {
         this.serverState = ServerState.OPEN;
 
         console.log(`App socket open at port ${JSON.stringify(this.server.options.port)}`);
-
+  
         this.server.on("connection", (client, req) => {
             console.log(`Client - ${req.headers.origin} connected!`);
             this.clients.byOrigin = {
@@ -50,13 +47,15 @@ export class SocketServer {
         this.server.on("close", (e: any) => {
             this.serverState = ServerState.CLOSED;
             console.log(
-                "Socket is closed. Reconnect will be attempted in 2 seconds.",
-                e.reason
+                "Socket is closed. Reconnect will be attempted in 2 seconds."
             );
-            this.start();
+            setTimeout(() => {
+                this.start();
+            },3000)
         });
         this.server.on("error", (e: any) => {
-            console.error("Socket encountered error: Closing socket");
+            console.error("Socket encountered error: Closing socket",
+                e);
             this.server.close();
         });
     }
@@ -92,10 +91,6 @@ export class SocketServer {
             },1000);
 
     private verifyClientToken(token: string | null) {
-        if (token) {
-            const decoded = jwt.decode(token) as {[key:string]:any};
-            return decoded["iss"] === process.env.TOKEN_ISSUER;
-        }
-        return false;
+        return validateClientToken(token);
     }
 }
