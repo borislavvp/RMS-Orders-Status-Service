@@ -7,6 +7,8 @@ import { SocketServer } from '../WebSocket/SocketServer';
 import { OrderAvailableMessage, OrderProduct } from '../WebSocket/messages/server/OrderAvailableMessage';
 import { OrderStatusChangeMessage, OrderStatus } from '../WebSocket/messages/server/OrderStatusChangeMessage';
 
+import { validateClientToken } from '../shared/utils/validateClientToken';
+
 export class GRPCServer {
   private _socketServer: SocketServer;
 
@@ -47,17 +49,22 @@ export class GRPCServer {
   public orderStatusChanged = (
     call: grpc.ServerUnaryCall<messages.rpcOrderStatusChangedReqest, messages.rpcOrderStatusChangedResponse>,
     callback: sendUnaryData<messages.rpcOrderStatusChangedResponse>) => {
+    const reply = new messages.rpcOrderStatusChangedResponse();
     try {
-      this._socketServer.send(new OrderStatusChangeMessage({
-        orderNumber: call.request.getOrdernumber(),
-        orderStatus: this.mapGrpcOrderStatusToSocket(call.request.getStatus())
-      }))
-
-      var reply = new messages.rpcOrderStatusChangedResponse();
-      reply.setSucceeded(true);
-      callback(null,reply);
+      if (validateClientToken(`${call.metadata.get("authorization")}`)) {
+        this._socketServer.send(new OrderStatusChangeMessage({
+          orderNumber: call.request.getOrdernumber(),
+          orderStatus: this.mapGrpcOrderStatusToSocket(call.request.getStatus())
+        }))
+  
+        reply.setSucceeded(true);
+        callback(null,reply);
+      } else {
+        reply.setSucceeded(false);
+        reply.setErrormessage("Invalid authorization token!")
+        callback(null,reply);
+      }
     } catch (error) {
-      var reply = new messages.rpcOrderStatusChangedResponse();
       reply.setSucceeded(false);
       reply.setErrormessage("Something wen't wrong with informing the clients!")
       callback(null,reply);
@@ -69,22 +76,27 @@ export class GRPCServer {
   public orderAvailable = (
     call: grpc.ServerUnaryCall<messages.rpcOrderAvailableReqest, messages.rpcOrderAvailableResponse>,
     callback: sendUnaryData<messages.rpcOrderAvailableResponse>) => {
+    const reply = new messages.rpcOrderAvailableResponse();
     try {
-      this._socketServer.send(new OrderAvailableMessage({
-        orderNumber : call.request.getNeworder().getOrdernumber(),
-        customerName : call.request.getNeworder().getCustomername(),
-        orderDate : call.request.getNeworder().getDate(),
-        customerPhone : call.request.getNeworder().getCustomerphone(),
-        location : call.request.getNeworder().getLocation(),
-        amount : call.request.getNeworder().getAmount(),
-        products : call.request.getNeworder().getProductsList().map(p => this.mapGrpcProductsMessageToSocket(p)),
-      }))
+       if (validateClientToken(`${call.metadata.get("authorization")}`)) {
+        this._socketServer.send(new OrderAvailableMessage({
+          orderNumber : call.request.getNeworder().getOrdernumber(),
+          customerName : call.request.getNeworder().getCustomername(),
+          orderDate : call.request.getNeworder().getDate(),
+          customerPhone : call.request.getNeworder().getCustomerphone(),
+          location : call.request.getNeworder().getLocation(),
+          amount : call.request.getNeworder().getAmount(),
+          products : call.request.getNeworder().getProductsList().map(p => this.mapGrpcProductsMessageToSocket(p)),
+        }))
 
-      var reply = new messages.rpcOrderAvailableResponse();
-      reply.setSucceeded(true);
-      callback(null,reply);
+        reply.setSucceeded(true);
+        callback(null, reply);
+      } else {
+        reply.setSucceeded(false);
+        reply.setErrormessage("Invalid authorization token!")
+        callback(null,reply);
+      }
     } catch (error) {
-      var reply = new messages.rpcOrderAvailableResponse();
       reply.setSucceeded(false);
       reply.setErrormessage("Something wen't wrong with informing the clients!")
       callback(null,reply);
@@ -96,7 +108,7 @@ export class GRPCServer {
    * sample server port
    */
   public start() {
-    var server = new grpc.Server();
+    const server = new grpc.Server();
     server.addService(
       services.rpcOrdersService, {
         orderAvailable: this.orderAvailable,
