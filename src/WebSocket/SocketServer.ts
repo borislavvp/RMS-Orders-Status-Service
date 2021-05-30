@@ -3,7 +3,7 @@ import { ServerMessage } from './messages/server/ServerMessage';
 import debounce from './utils/debounce';
 import { ServerState } from './types/ServerState';
 import { ServerMessageType } from './messages/server/ServerMessageType';
-import { validateClientToken } from '@/shared/utils/validateClientToken';
+import { validateClientToken } from '../shared/utils/validateClientToken';
 export class SocketServer {
     private server!: ws.Server;
     private serverMessagessBuffer: ServerMessage[];
