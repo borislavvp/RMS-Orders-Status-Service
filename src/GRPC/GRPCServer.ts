@@ -78,7 +78,8 @@ export class GRPCServer {
     callback: sendUnaryData<messages.rpcOrderAvailableResponse>) => {
     const reply = new messages.rpcOrderAvailableResponse();
     try {
-       if (validateClientToken(`${call.metadata.get("authorization")}`)) {
+      const token = `${call.metadata.get("authorization")}`
+       if (token.startsWith("Bearer ") && validateClientToken(token.substring(7,token.length))) {
         this._socketServer.send(new OrderAvailableMessage({
           orderNumber : call.request.getNeworder().getOrdernumber(),
           customerName : call.request.getNeworder().getCustomername(),
