@@ -56,10 +56,6 @@ export class rpcOrder extends jspb.Message {
     setCustomerphone(value: string): rpcOrder;
     getAmount(): number;
     setAmount(value: number): rpcOrder;
-    clearProductsList(): void;
-    getProductsList(): Array<rpcOrderProduct>;
-    setProductsList(value: Array<rpcOrderProduct>): rpcOrder;
-    addProducts(value?: rpcOrderProduct, index?: number): rpcOrderProduct;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): rpcOrder.AsObject;
@@ -80,7 +76,6 @@ export namespace rpcOrder {
         location: string,
         customerphone: string,
         amount: number,
-        productsList: Array<rpcOrderProduct.AsObject>,
     }
 }
 
@@ -107,35 +102,16 @@ export namespace rpcOrderStatusChangedReqest {
     }
 }
 
-export class rpcOrderStatusChangedResponse extends jspb.Message { 
-    getSucceeded(): boolean;
-    setSucceeded(value: boolean): rpcOrderStatusChangedResponse;
-    getErrormessage(): string;
-    setErrormessage(value: string): rpcOrderStatusChangedResponse;
-
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): rpcOrderStatusChangedResponse.AsObject;
-    static toObject(includeInstance: boolean, msg: rpcOrderStatusChangedResponse): rpcOrderStatusChangedResponse.AsObject;
-    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
-    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: rpcOrderStatusChangedResponse, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): rpcOrderStatusChangedResponse;
-    static deserializeBinaryFromReader(message: rpcOrderStatusChangedResponse, reader: jspb.BinaryReader): rpcOrderStatusChangedResponse;
-}
-
-export namespace rpcOrderStatusChangedResponse {
-    export type AsObject = {
-        succeeded: boolean,
-        errormessage: string,
-    }
-}
-
 export class rpcOrderAvailableReqest extends jspb.Message { 
 
     hasNeworder(): boolean;
     clearNeworder(): void;
     getNeworder(): rpcOrder | undefined;
     setNeworder(value?: rpcOrder): rpcOrderAvailableReqest;
+    clearProductsList(): void;
+    getProductsList(): Array<rpcOrderProduct>;
+    setProductsList(value: Array<rpcOrderProduct>): rpcOrderAvailableReqest;
+    addProducts(value?: rpcOrderProduct, index?: number): rpcOrderProduct;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): rpcOrderAvailableReqest.AsObject;
@@ -150,26 +126,50 @@ export class rpcOrderAvailableReqest extends jspb.Message {
 export namespace rpcOrderAvailableReqest {
     export type AsObject = {
         neworder?: rpcOrder.AsObject,
+        productsList: Array<rpcOrderProduct.AsObject>,
     }
 }
 
-export class rpcOrderAvailableResponse extends jspb.Message { 
-    getSucceeded(): boolean;
-    setSucceeded(value: boolean): rpcOrderAvailableResponse;
-    getErrormessage(): string;
-    setErrormessage(value: string): rpcOrderAvailableResponse;
+export class rpcOrderReadyForPickupReqest extends jspb.Message { 
+
+    hasNeworder(): boolean;
+    clearNeworder(): void;
+    getNeworder(): rpcOrder | undefined;
+    setNeworder(value?: rpcOrder): rpcOrderReadyForPickupReqest;
 
     serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): rpcOrderAvailableResponse.AsObject;
-    static toObject(includeInstance: boolean, msg: rpcOrderAvailableResponse): rpcOrderAvailableResponse.AsObject;
+    toObject(includeInstance?: boolean): rpcOrderReadyForPickupReqest.AsObject;
+    static toObject(includeInstance: boolean, msg: rpcOrderReadyForPickupReqest): rpcOrderReadyForPickupReqest.AsObject;
     static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
     static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
-    static serializeBinaryToWriter(message: rpcOrderAvailableResponse, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): rpcOrderAvailableResponse;
-    static deserializeBinaryFromReader(message: rpcOrderAvailableResponse, reader: jspb.BinaryReader): rpcOrderAvailableResponse;
+    static serializeBinaryToWriter(message: rpcOrderReadyForPickupReqest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): rpcOrderReadyForPickupReqest;
+    static deserializeBinaryFromReader(message: rpcOrderReadyForPickupReqest, reader: jspb.BinaryReader): rpcOrderReadyForPickupReqest;
 }
 
-export namespace rpcOrderAvailableResponse {
+export namespace rpcOrderReadyForPickupReqest {
+    export type AsObject = {
+        neworder?: rpcOrder.AsObject,
+    }
+}
+
+export class rpcRequestResult extends jspb.Message { 
+    getSucceeded(): boolean;
+    setSucceeded(value: boolean): rpcRequestResult;
+    getErrormessage(): string;
+    setErrormessage(value: string): rpcRequestResult;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): rpcRequestResult.AsObject;
+    static toObject(includeInstance: boolean, msg: rpcRequestResult): rpcRequestResult.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: rpcRequestResult, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): rpcRequestResult;
+    static deserializeBinaryFromReader(message: rpcRequestResult, reader: jspb.BinaryReader): rpcRequestResult;
+}
+
+export namespace rpcRequestResult {
     export type AsObject = {
         succeeded: boolean,
         errormessage: string,

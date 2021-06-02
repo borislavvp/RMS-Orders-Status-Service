@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>PROEPOrdersProtobufDefinitions</id>
-    <version>1.0.4</version>
+    <version>1.0.6</version>
     <title>PROEP Orders Protobuf Definitions</title>
     <authors>PROEP</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>

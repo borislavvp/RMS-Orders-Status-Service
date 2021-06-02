@@ -15,15 +15,15 @@ function deserialize_orders_rpcOrderAvailableReqest(buffer_arg) {
   return orders_orders_pb.rpcOrderAvailableReqest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_orders_rpcOrderAvailableResponse(arg) {
-  if (!(arg instanceof orders_orders_pb.rpcOrderAvailableResponse)) {
-    throw new Error('Expected argument of type orders.rpcOrderAvailableResponse');
+function serialize_orders_rpcOrderReadyForPickupReqest(arg) {
+  if (!(arg instanceof orders_orders_pb.rpcOrderReadyForPickupReqest)) {
+    throw new Error('Expected argument of type orders.rpcOrderReadyForPickupReqest');
   }
   return Buffer.from(arg.serializeBinary());
 }
 
-function deserialize_orders_rpcOrderAvailableResponse(buffer_arg) {
-  return orders_orders_pb.rpcOrderAvailableResponse.deserializeBinary(new Uint8Array(buffer_arg));
+function deserialize_orders_rpcOrderReadyForPickupReqest(buffer_arg) {
+  return orders_orders_pb.rpcOrderReadyForPickupReqest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_orders_rpcOrderStatusChangedReqest(arg) {
@@ -37,15 +37,15 @@ function deserialize_orders_rpcOrderStatusChangedReqest(buffer_arg) {
   return orders_orders_pb.rpcOrderStatusChangedReqest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_orders_rpcOrderStatusChangedResponse(arg) {
-  if (!(arg instanceof orders_orders_pb.rpcOrderStatusChangedResponse)) {
-    throw new Error('Expected argument of type orders.rpcOrderStatusChangedResponse');
+function serialize_orders_rpcRequestResult(arg) {
+  if (!(arg instanceof orders_orders_pb.rpcRequestResult)) {
+    throw new Error('Expected argument of type orders.rpcRequestResult');
   }
   return Buffer.from(arg.serializeBinary());
 }
 
-function deserialize_orders_rpcOrderStatusChangedResponse(buffer_arg) {
-  return orders_orders_pb.rpcOrderStatusChangedResponse.deserializeBinary(new Uint8Array(buffer_arg));
+function deserialize_orders_rpcRequestResult(buffer_arg) {
+  return orders_orders_pb.rpcRequestResult.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 
@@ -55,22 +55,33 @@ var rpcOrdersService = exports.rpcOrdersService = {
     requestStream: false,
     responseStream: false,
     requestType: orders_orders_pb.rpcOrderStatusChangedReqest,
-    responseType: orders_orders_pb.rpcOrderStatusChangedResponse,
+    responseType: orders_orders_pb.rpcRequestResult,
     requestSerialize: serialize_orders_rpcOrderStatusChangedReqest,
     requestDeserialize: deserialize_orders_rpcOrderStatusChangedReqest,
-    responseSerialize: serialize_orders_rpcOrderStatusChangedResponse,
-    responseDeserialize: deserialize_orders_rpcOrderStatusChangedResponse,
+    responseSerialize: serialize_orders_rpcRequestResult,
+    responseDeserialize: deserialize_orders_rpcRequestResult,
   },
   orderAvailable: {
     path: '/orders.rpcOrders/OrderAvailable',
     requestStream: false,
     responseStream: false,
     requestType: orders_orders_pb.rpcOrderAvailableReqest,
-    responseType: orders_orders_pb.rpcOrderAvailableResponse,
+    responseType: orders_orders_pb.rpcRequestResult,
     requestSerialize: serialize_orders_rpcOrderAvailableReqest,
     requestDeserialize: deserialize_orders_rpcOrderAvailableReqest,
-    responseSerialize: serialize_orders_rpcOrderAvailableResponse,
-    responseDeserialize: deserialize_orders_rpcOrderAvailableResponse,
+    responseSerialize: serialize_orders_rpcRequestResult,
+    responseDeserialize: deserialize_orders_rpcRequestResult,
+  },
+  orderReadyForPickup: {
+    path: '/orders.rpcOrders/OrderReadyForPickup',
+    requestStream: false,
+    responseStream: false,
+    requestType: orders_orders_pb.rpcOrderReadyForPickupReqest,
+    responseType: orders_orders_pb.rpcRequestResult,
+    requestSerialize: serialize_orders_rpcOrderReadyForPickupReqest,
+    requestDeserialize: deserialize_orders_rpcOrderReadyForPickupReqest,
+    responseSerialize: serialize_orders_rpcRequestResult,
+    responseDeserialize: deserialize_orders_rpcRequestResult,
   },
 };
 

@@ -28,7 +28,6 @@ message rpcOrder {
     string location = 5;
     string customerPhone = 6;
     double amount = 7;
-    repeated rpcOrderProduct products = 8;
 }
 
 message rpcOrderStatusChangedReqest {
@@ -36,21 +35,22 @@ message rpcOrderStatusChangedReqest {
     rpcOrderStatus status = 2;
 }
 
-message rpcOrderStatusChangedResponse {
-    bool succeeded = 1;
-    string errorMessage = 2;
+message rpcOrderAvailableReqest {
+    rpcOrder newOrder = 1;
+    repeated rpcOrderProduct products = 2;
 }
 
-message rpcOrderAvailableReqest {
+message rpcOrderReadyForPickupReqest {
     rpcOrder newOrder = 1;
 }
 
-message rpcOrderAvailableResponse {
+message rpcRequestResult {
     bool succeeded = 1;
     string errorMessage = 2;
 }
 
 service rpcOrders{
-    rpc OrderStatusChanged (rpcOrderStatusChangedReqest) returns (rpcOrderStatusChangedResponse){};
-    rpc OrderAvailable (rpcOrderAvailableReqest) returns (rpcOrderAvailableResponse){};
+    rpc OrderStatusChanged (rpcOrderStatusChangedReqest) returns (rpcRequestResult){};
+    rpc OrderAvailable (rpcOrderAvailableReqest) returns (rpcRequestResult){};
+    rpc OrderReadyForPickup (rpcOrderReadyForPickupReqest) returns (rpcRequestResult){};
 }
