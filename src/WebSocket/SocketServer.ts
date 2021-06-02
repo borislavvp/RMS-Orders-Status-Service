@@ -1,6 +1,6 @@
 import ws from 'ws';
-import { ServerMessage } from './messages/server/ServerMessage';
 import debounce from './utils/debounce';
+import { ServerMessage } from './messages/server/ServerMessage';
 import { ServerState } from './types/ServerState';
 import { ServerMessageType } from './messages/server/ServerMessageType';
 import { validateClientToken } from '../shared/utils/validateClientToken';
@@ -31,7 +31,7 @@ export class SocketServer {
         this.serverState = ServerState.OPEN;
 
         console.log(`App socket open at port ${JSON.stringify(this.server.options.port)}`);
-  
+
         this.server.on("connection", (client, req) => {
             console.log(`Client - ${req.headers.origin} connected!`);
             this.clients.byOrigin = {
@@ -64,6 +64,13 @@ export class SocketServer {
         if (this.serverState === ServerState.OPEN) {
             if (message.type === ServerMessageType.ORDER_AVAILABLE) {
                 this.clients.byOrigin[process.env.RESTAURANT_APPLICATION_ORIGIN!]
+                    ?.forEach(restaurantClient => {
+                        if (restaurantClient.readyState === restaurantClient.OPEN) {
+                            restaurantClient.send(JSON.stringify(message))
+                        }
+                    })
+            } else if (message.type === ServerMessageType.ORDER_READY_FOR_PICKUP) {
+                 this.clients.byOrigin[process.env.DRIVERS_APPLICATION_ORIGIN!]
                     ?.forEach(restaurantClient => {
                         if (restaurantClient.readyState === restaurantClient.OPEN) {
                             restaurantClient.send(JSON.stringify(message))
