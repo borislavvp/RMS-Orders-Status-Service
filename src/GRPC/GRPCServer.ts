@@ -8,6 +8,7 @@ import { OrderAvailableMessage, OrderProduct } from '../WebSocket/messages/serve
 import { OrderStatusChangeMessage, OrderStatus } from '../WebSocket/messages/server/OrderStatusChangeMessage';
 
 import { validateClientToken } from '../shared/utils/validateClientToken';
+import { OrderReadyForPickuMessage } from '../WebSocket/messages/server/OrderReadyForPickupMessage';
 
 export class GRPCServer {
   private _socketServer: SocketServer;
@@ -47,11 +48,12 @@ export class GRPCServer {
    * Implements the orderAvailable RPC method.
    */
   public orderStatusChanged = (
-    call: grpc.ServerUnaryCall<messages.rpcOrderStatusChangedReqest, messages.rpcOrderStatusChangedResponse>,
-    callback: sendUnaryData<messages.rpcOrderStatusChangedResponse>) => {
-    const reply = new messages.rpcOrderStatusChangedResponse();
+    call: grpc.ServerUnaryCall<messages.rpcOrderStatusChangedReqest, messages.rpcRequestResult>,
+    callback: sendUnaryData<messages.rpcRequestResult>) => {
+    const reply = new messages.rpcRequestResult();
     try {
-      if (validateClientToken(`${call.metadata.get("authorization")}`)) {
+       const token = `${call.metadata.get("authorization")}`
+       if (token.startsWith("Bearer ") && validateClientToken(token.substring(7,token.length))) {
         this._socketServer.send(new OrderStatusChangeMessage({
           orderNumber: call.request.getOrdernumber(),
           orderStatus: this.mapGrpcOrderStatusToSocket(call.request.getStatus())
@@ -74,11 +76,11 @@ export class GRPCServer {
    * Implements the orderAvailable RPC method.
    */
   public orderAvailable = (
-    call: grpc.ServerUnaryCall<messages.rpcOrderAvailableReqest, messages.rpcOrderAvailableResponse>,
-    callback: sendUnaryData<messages.rpcOrderAvailableResponse>) => {
-    const reply = new messages.rpcOrderAvailableResponse();
+    call: grpc.ServerUnaryCall<messages.rpcOrderAvailableReqest, messages.rpcRequestResult>,
+    callback: sendUnaryData<messages.rpcRequestResult>) => {
+    const reply = new messages.rpcRequestResult();
     try {
-      const token = `${call.metadata.get("authorization")}`
+       const token = `${call.metadata.get("authorization")}`
        if (token.startsWith("Bearer ") && validateClientToken(token.substring(7,token.length))) {
         this._socketServer.send(new OrderAvailableMessage({
           orderNumber : call.request.getNeworder().getOrdernumber(),
@@ -87,7 +89,39 @@ export class GRPCServer {
           customerPhone : call.request.getNeworder().getCustomerphone(),
           location : call.request.getNeworder().getLocation(),
           amount : call.request.getNeworder().getAmount(),
-          products : call.request.getNeworder().getProductsList().map(p => this.mapGrpcProductsMessageToSocket(p)),
+          products : call.request.getProductsList().map(p => this.mapGrpcProductsMessageToSocket(p)),
+        }))
+
+        reply.setSucceeded(true);
+        callback(null, reply);
+      } else {
+        reply.setSucceeded(false);
+        reply.setErrormessage("Invalid authorization token!")
+        callback(null,reply);
+      }
+    } catch (error) {
+      reply.setSucceeded(false);
+      reply.setErrormessage("Something wen't wrong with informing the clients!")
+      callback(null,reply);
+    }
+  }
+  /**
+   * Implements the orderReadyForPickup RPC method.
+   */
+  public orderReadyForPickup = (
+    call: grpc.ServerUnaryCall<messages.rpcOrderReadyForPickupReqest, messages.rpcRequestResult>,
+    callback: sendUnaryData<messages.rpcRequestResult>) => {
+    const reply = new messages.rpcRequestResult();
+    try {
+      const token = `${call.metadata.get("authorization")}`
+       if (token.startsWith("Bearer ") && validateClientToken(token.substring(7,token.length))) {
+        this._socketServer.send(new OrderReadyForPickuMessage({
+          orderNumber : call.request.getNeworder().getOrdernumber(),
+          customerName : call.request.getNeworder().getCustomername(),
+          orderDate : call.request.getNeworder().getDate(),
+          customerPhone : call.request.getNeworder().getCustomerphone(),
+          location : call.request.getNeworder().getLocation(),
+          amount : call.request.getNeworder().getAmount(),
         }))
 
         reply.setSucceeded(true);
@@ -114,6 +148,7 @@ export class GRPCServer {
       services.rpcOrdersService, {
         orderAvailable: this.orderAvailable,
         orderStatusChanged: this.orderStatusChanged,
+        orderReadyForPickup: this.orderReadyForPickup,
       }
     );
     server.bindAsync('[::]:50051', grpc.ServerCredentials.createInsecure(), () => {
