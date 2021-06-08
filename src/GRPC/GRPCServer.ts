@@ -51,7 +51,8 @@ export class GRPCServer {
     callback: sendUnaryData<messages.rpcOrderStatusChangedResponse>) => {
     const reply = new messages.rpcOrderStatusChangedResponse();
     try {
-      if (validateClientToken(`${call.metadata.get("authorization")}`)) {
+      const token = `${call.metadata.get("authorization")}`
+      if (token.startsWith("Bearer ") && validateClientToken(token.substring(7,token.length))) {
         this._socketServer.send(new OrderStatusChangeMessage({
           orderNumber: call.request.getOrdernumber(),
           orderStatus: this.mapGrpcOrderStatusToSocket(call.request.getStatus())
