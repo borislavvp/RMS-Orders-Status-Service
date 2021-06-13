@@ -28,7 +28,7 @@ export class GRPCServer {
       case messages.rpcOrderStatus.DELIVERING:
         return OrderStatus.Delivering
       case messages.rpcOrderStatus.DELIVERED:
-        return OrderStatus.Delivering
+        return OrderStatus.Delivered
       default:
         return null;
     }
