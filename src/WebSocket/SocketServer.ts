@@ -3,20 +3,20 @@ import debounce from './utils/debounce';
 import { ServerMessage } from './messages/server/ServerMessage';
 import { ServerState } from './types/ServerState';
 import { ServerMessageType } from './messages/server/ServerMessageType';
-import { validateClientToken } from '../shared/utils/validateClientToken';
+import { getClientId, validateClientToken } from '../shared/utils/validateClientToken';
 export class SocketServer {
     private server!: ws.Server;
     private serverMessagessBuffer: ServerMessage[];
     private serverState: ServerState;
     private clients: {
-        byOrigin: {
+        byID: {
             [key:string]:ws[]
         };
     }
     constructor() {
         this.serverMessagessBuffer = [];
         this.serverState = ServerState.CLOSED;
-        this.clients = { byOrigin: {}};
+        this.clients = { byID: {}};
     }
     
     public start() {
@@ -33,12 +33,15 @@ export class SocketServer {
         console.log(`App socket open at port ${JSON.stringify(this.server.options.port)}`);
 
         this.server.on("connection", (client, req) => {
-            console.log(`Client - ${req.headers.origin} connected!`);
-            this.clients.byOrigin = {
-                ...this.clients.byOrigin,
-                [req.headers.origin!]:
-                    this.clients.byOrigin[req.headers.origin!]
-                        ? [...this.clients.byOrigin[req.headers.origin!], client]
+            const cliendID = getClientId(new URL(req.headers.origin + req.url).searchParams.get("token"));
+
+            console.log(`Client - ${req.headers.origin} - ${cliendID} connected!`);
+
+            this.clients.byID = {
+                ...this.clients.byID,
+                [cliendID]:
+                    this.clients.byID[cliendID]
+                        ? [...this.clients.byID[cliendID], client]
                         : [client]
             };
             this.flushServerMessages();
@@ -63,17 +66,17 @@ export class SocketServer {
     public send(message: ServerMessage) {
         if (this.serverState === ServerState.OPEN) {
             if (message.type === ServerMessageType.ORDER_AVAILABLE) {
-                this.clients.byOrigin[process.env.RESTAURANT_APPLICATION_ORIGIN!]
+                this.clients.byID[process.env.RESTAURANT_CLIENT_ID!]
                     ?.forEach(restaurantClient => {
                         if (restaurantClient.readyState === restaurantClient.OPEN) {
                             restaurantClient.send(JSON.stringify(message))
                         }
                     })
             } else if (message.type === ServerMessageType.ORDER_READY_FOR_PICKUP) {
-                 this.clients.byOrigin[process.env.DRIVERS_APPLICATION_ORIGIN!]
-                    ?.forEach(restaurantClient => {
-                        if (restaurantClient.readyState === restaurantClient.OPEN) {
-                            restaurantClient.send(JSON.stringify(message))
+                 this.clients.byID[process.env.DRIVERS_CLIENT_ID!]
+                    ?.forEach(driverClient => {
+                        if (driverClient.readyState === driverClient.OPEN) {
+                            driverClient.send(JSON.stringify(message))
                         }
                     })
             } else {

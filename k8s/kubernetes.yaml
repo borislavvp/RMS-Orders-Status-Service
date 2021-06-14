@@ -17,14 +17,14 @@ spec:
     spec:
       containers:
       - name: orders-status
-        image: acrproep01.azurecr.io/orders-status:v1.3
+        image: acrproep01.azurecr.io/orders-status:v1.5
         env:
         - name: TOKEN_ISSUER
           value: urn:prope:identity:issuer
-        - name: RESTAURANT_APPLICATION_ORIGIN
-          value: https://51.141.4.73
-        - name: DRIVERS_APPLICATION_ORIGIN
-          value: https://localhost:5002
+        - name: RESTAURANT_CLIENT_ID
+          value: DESKTOP_APP_ID
+        - name: DRIVERS_CLIENT_ID
+          value: MOBILE_APP_ID
         ports:
         - containerPort: 3333
           name: socket
