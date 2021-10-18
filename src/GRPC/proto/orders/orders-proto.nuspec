@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>PROEPOrdersProtobufDefinitions</id>
+    <version>1.0.6</version>
+    <title>PROEP Orders Protobuf Definitions</title>
+    <authors>PROEP</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Protobuf Definitions for the GRPC Orders</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2021</copyright>
+    <contentFiles>
+        <files include="any/any/Protos/**/*.proto" buildAction="None" copyToOutput="false"/>
+    </contentFiles>
+  </metadata>
+    <files>
+        <file src="orders.proto" target="contentFiles\any\any\Protos" />
+    </files>
+</package>

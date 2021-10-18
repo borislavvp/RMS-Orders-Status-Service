@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-status
+  namespace: ingress
+  labels:
+    app: orders-status
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orders-status
+  template:
+    metadata:
+      labels:
+        app: orders-status
+    spec:
+      containers:
+      - name: orders-status
+        image: acrproep01.azurecr.io/orders-status:v1.5
+        env:
+        - name: TOKEN_ISSUER
+          value: urn:prope:identity:issuer
+        - name: RESTAURANT_CLIENT_ID
+          value: DESKTOP_APP_ID
+        - name: DRIVERS_CLIENT_ID
+          value: MOBILE_APP_ID
+        ports:
+        - containerPort: 3333
+          name: socket
+        - containerPort: 50051
+          name: grpc
